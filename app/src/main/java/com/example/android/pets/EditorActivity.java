@@ -132,7 +132,7 @@ public class EditorActivity extends AppCompatActivity {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
 
-        if (newRowId!=0)
+        if (newRowId!=-1)
             Toast.makeText(this, "Pet saved with id: " +  newRowId, Toast.LENGTH_LONG).show();
         else
             Toast.makeText(this, "Error with saving pet", Toast.LENGTH_LONG).show();
