@@ -18,11 +18,10 @@ package com.example.android.pets;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +37,6 @@ import static com.example.android.pets.data.PetContract.PetEntry;
 public class CatalogActivity extends AppCompatActivity {
 
     private static final String TAG = "CatalogActivity";
-    private PetDbHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +53,6 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
-
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        mDbHelper = new PetDbHelper(this);
     }
 
     @Override
@@ -75,8 +69,8 @@ public class CatalogActivity extends AppCompatActivity {
         // To access our database, we instantiate our subclass of SQLiteOpenHelper
         // and pass the context, which is the current activity.
 
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        // Create and/or open a database to read from it (do not do this directly, use content resolver)
+//        SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         // Perform this raw SQL query "SELECT * FROM pets"
         // to get a Cursor that contains all rows from the pets table.
@@ -90,7 +84,10 @@ public class CatalogActivity extends AppCompatActivity {
                 PetEntry.COLUMN_PET_WEIGHT
         };
 
-        Cursor cursor = db.query(PetEntry.TABLE_NAME, projection, null, null, null, null, null);
+        // do not do this directly, use content resolver
+//        Cursor cursor = db.query(PetEntry.TABLE_NAME, projection, null, null, null, null, null);
+
+        Cursor cursor = getContentResolver().query(PetEntry.CONTENT_URI, projection, null, null, null);
 
         TextView displayView = (TextView) findViewById(R.id.text_view_pet);
         try {
@@ -139,7 +136,7 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
 
-    private void insertPet(){
+    private void insertPet() {
         // Toto, Terrier, Male, 7kg
         ContentValues values = new ContentValues();
         values.put(PetEntry.COLUMN_PET_NAME, "Toto");
@@ -147,14 +144,17 @@ public class CatalogActivity extends AppCompatActivity {
         values.put(PetEntry.COLUMN_PET_GENDER, PetEntry.GENDER_MALE);
         values.put(PetEntry.COLUMN_PET_WEIGHT, 7);
 
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        // Do not do this directly, use content resolver
+//        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+//        long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
 
-        long newRowId = db.insert(PetEntry.TABLE_NAME,null,values);
+        Uri uri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
 
-        if (newRowId==-1)
-            Log.e(TAG, "Inserting a new pet failed in insertPet()");
-        else
-            Log.d(TAG, "New row ID: " + newRowId);
+        // Is done in the content provider now
+//        if (newRowId == -1)
+//            Log.e(TAG, "Inserting a new pet failed in insertPet()");
+//        else
+//            Log.d(TAG, "New row ID: " + newRowId);
 
     }
 
