@@ -54,6 +54,13 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
+        // Find the ListView which will be populated with the pet data
+        ListView lvItems = (ListView) findViewById(R.id.lvItems);
+
+        // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
+        View emptyView = findViewById(R.id.empty_view);
+        lvItems.setEmptyView(emptyView);
+
     }
 
     @Override
@@ -90,20 +97,12 @@ public class CatalogActivity extends AppCompatActivity {
 
         Cursor cursor = getContentResolver().query(PetEntry.CONTENT_URI, projection, null, null, null);
 
-//        TextView displayView = (TextView) findViewById(R.id.text_view_pet);
-        try {
-            // Find ListView to populate
-            ListView lvItems = (ListView) findViewById(R.id.lvItems);
-            // Setup cursor adapter using cursor from last step
-            PetCursorAdapter petAdapter = new PetCursorAdapter(this, cursor);
-            // Attach cursor adapter to the ListView
-            lvItems.setAdapter(petAdapter);
- 
-        } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
-//            cursor.close();
-        }
+        // Find ListView to populate
+        ListView lvItems = (ListView) findViewById(R.id.lvItems);
+        // Setup cursor adapter using cursor from last step
+        PetCursorAdapter petAdapter = new PetCursorAdapter(this, cursor);
+        // Attach cursor adapter to the ListView
+        lvItems.setAdapter(petAdapter);
     }
 
 
