@@ -83,7 +83,6 @@ public class PetProvider extends ContentProvider {
                 // For the PETS code, query the pets table directly with the given
                 // projection, selection, selection arguments, and sort order. The cursor
                 // could contain multiple rows of the pets table.
-                // TODO: Perform database query on pets table
                 cursor = database.query(PetEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null, sortOrder);
                 break;
             case PET_ID:
