@@ -16,6 +16,7 @@
 package com.example.android.pets;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -28,7 +29,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.example.android.pets.data.PetContract;
 
 import static com.example.android.pets.data.PetContract.PetEntry;
 
@@ -70,6 +74,16 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         mCursorAdapter = new PetCursorAdapter(this, null);
         petListView.setAdapter(mCursorAdapter);
 
+        // Setup item click listener
+        petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent editPetIntent = new Intent(CatalogActivity.this, EditorActivity.class);
+                editPetIntent.setData(ContentUris.withAppendedId(PetContract.BASE_CONTENT_URI,id));
+                startActivity(editPetIntent);
+            }
+        });
+
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(PET_LOADER, null, this);
@@ -87,14 +101,14 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
      * the pets database.
      */
 //    private void displayDatabaseInfo() {
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
+    // To access our database, we instantiate our subclass of SQLiteOpenHelper
+    // and pass the context, which is the current activity.
 
-        // Create and/or open a database to read from it (do not do this directly, use content resolver)
+    // Create and/or open a database to read from it (do not do this directly, use content resolver)
 //        SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
-        // Perform this raw SQL query "SELECT * FROM pets"
-        // to get a Cursor that contains all rows from the pets table.
+    // Perform this raw SQL query "SELECT * FROM pets"
+    // to get a Cursor that contains all rows from the pets table.
 //        Cursor cursor = db.rawQuery("SELECT * FROM " + PetEntry.TABLE_NAME, null);
 
 //        String[] projection = {
@@ -105,7 +119,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 //                PetEntry.COLUMN_PET_WEIGHT
 //        };
 
-        // do not do this directly, use content resolver
+    // do not do this directly, use content resolver
 //        Cursor cursor = db.query(PetEntry.TABLE_NAME, projection, null, null, null, null, null);
 
 //        Cursor cursor = getContentResolver().query(PetEntry.CONTENT_URI, projection, null, null, null);
@@ -117,8 +131,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 //        // Attach cursor adapter to the ListView
 //        lvItems.setAdapter(petAdapter);
 //    }
-
-
     private void insertPet() {
         // Toto, Terrier, Male, 7kg
         ContentValues values = new ContentValues();
