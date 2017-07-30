@@ -82,7 +82,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mCurrentPetUri = getIntent().getData();
         if (mCurrentPetUri == null) {
             setTitle(R.string.editor_activity_title_new_pet);
-            Log.d("DEEEEEEEBUUUUUUGG","The URI is null!!");
         } else {
             setTitle(R.string.editor_activity_title_edit_pet);
         }
@@ -141,7 +140,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         });
     }
 
-    private void insertPet() {
+    private void savePet() {
         String nameString = mNameEditText.getText().toString().trim();
         String breedString = mBreedEditText.getText().toString().trim();
         Integer weight = Integer.parseInt(mWeightEditText.getText().toString().trim());
@@ -156,17 +155,32 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 //        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 //        long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
 
-        Uri newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+        if (mCurrentPetUri == null) {
+            Uri newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
 
-        // Show a toast message depending on whether or not the insertion was successful
-        if (newUri == null) {
-            // If the new content URI is null, then there was an error with insertion.
-            Toast.makeText(this, getString(R.string.editor_insert_pet_failed),
-                    Toast.LENGTH_SHORT).show();
+            // Show a toast message depending on whether or not the insertion was successful
+            if (newUri == null) {
+                // If the new content URI is null, then there was an error with insertion.
+                Toast.makeText(this, getString(R.string.editor_insert_pet_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the insertion was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.editor_insert_pet_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
         } else {
-            // Otherwise, the insertion was successful and we can display a toast.
-            Toast.makeText(this, getString(R.string.editor_insert_pet_successful),
-                    Toast.LENGTH_SHORT).show();
+            int rows = getContentResolver().update(mCurrentPetUri, values, null, null);
+
+            if (rows == 0) {
+                // If the number of updated rows is zero, then there was an error with update.
+                Toast.makeText(this, getString(R.string.editor_update_pet_failed),
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, updating was successful and we can display a toast.
+                Toast.makeText(this, getString(R.string.editor_update_pet_successful),
+                        Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
@@ -185,7 +199,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save pet to database
-                insertPet();
+                savePet();
                 // Exit activity
                 finish();
                 return true;
